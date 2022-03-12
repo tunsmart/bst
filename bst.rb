@@ -64,6 +64,17 @@ class Tree
     end
   end
 
+  def depth(value, root=@root, level=0)
+    return nil if root.nil?
+    if value == root.data
+      return level 
+    elsif value < root.data
+      depth(value, root.left, level += 1)
+    elsif value > root.data
+      depth(value, root.right, level += 1)
+    end
+  end
+
   def level_order(node = @root)
     return nil if node.nil?
     result = []
@@ -76,31 +87,31 @@ class Tree
       queue << node.right unless node.right.nil?
       queue.shift
     end
-    p result
+    result unless block_given?
   end
 
-  def pre_order(node = @root)
+  def pre_order(node = @root, result=[], &block)
     return nil if node.nil?
-
-    puts node.data
-    pre_order(node.left)
-    pre_order(node.right)
+    block ? block.call(node.data) : result << node.data
+    pre_order(node.left, result, &block)
+    pre_order(node.right, result, &block)
+    return result unless block_given?
   end
 
-  def in_order(node = @root)
+  def in_order(node = @root, result=[], &block)
     return nil if node.nil?
-
-    in_order(node.left)
-    puts node.data
-    in_order(node.right)
+    in_order(node.left, result, &block)
+    block ? block.call(node.data) : result << node.data
+    in_order(node.right, result, &block)
+    return result unless block_given?
   end
 
-  def post_order(node = @root)
+  def post_order(node = @root, result=[], &block)
     return nil if node.nil?
-
-    post_order(node.left)
-    post_order(node.right)
-    puts node.data
+    post_order(node.left, result, &block)
+    post_order(node.right, result, &block)
+    block ? block.call(node.data) : result << node.data
+    return result unless block_given?
   end
 
   def min_value(node)
@@ -142,7 +153,7 @@ class Tree
     node
   end
 end
-arr = Array.new(15) { rand(1..100) }.uniq.sort
+arr = Array.new(30) { rand(1..100) }.uniq.sort
 p arr
 tree = Tree.new(arr)
 tree.build_tree
@@ -150,4 +161,5 @@ tree.build_tree
 # tree.insert(2)
 #tree.insert(200)
 tree.pretty_print
-tree.level_order{|v| puts v}
+p arr[3]
+p tree.depth(arr[3])
