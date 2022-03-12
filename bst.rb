@@ -64,6 +64,21 @@ class Tree
     end
   end
 
+  def level_order(node = @root)
+    return nil if node.nil?
+    result = []
+    queue = []
+    queue << node
+    until queue.empty?
+      node = queue[0]
+      (block_given?) ? yield(node.data) : result << node.data
+      queue << node.left unless node.left.nil?
+      queue << node.right unless node.right.nil?
+      queue.shift
+    end
+    p result
+  end
+
   def pre_order(node = @root)
     return nil if node.nil?
 
@@ -133,7 +148,6 @@ tree = Tree.new(arr)
 tree.build_tree
 #tree.insert(1000)
 # tree.insert(2)
-tree.insert(4)
 #tree.insert(200)
 tree.pretty_print
-p tree.find(arr[2])
+tree.level_order{|v| puts v}
