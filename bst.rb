@@ -1,3 +1,4 @@
+require 'pry-byebug'
 # frozen_string_literal: true
 
 class Node
@@ -75,24 +76,24 @@ class Tree
     end
   end
 
-  def height(value, node = self.find(value))
-    return nil if node.nil?
+  def height(node = @root)
+    return -1 if node.nil?
+    left_h = height(node.left)
+    right_h = height(node.right)
 
-    left_height = 0
-    left_root = node
-    until left_root.nil?
-      left_height += 1
-      left_root = left_root.left
-    end
+    (left_h > right_h) ? left_h + 1 : right_h + 1
+  end
 
-    right_height = 0
-    right_root = node
-    until right_root.nil?
-      right_height += 1
-      right_root = right_root.left
-    end
+  def balanced?
+    left_tree_height = height(@root.left)
+    right_tree_height = height(@root.right)
+    ((left_tree_height - right_tree_height).abs > 1) ? false : true 
+  end
 
-    right_height > left_height ? right_height : left_height
+  def rebalance
+    arr = self.in_order
+    @root = nil
+    self.build_tree(arr, 0, arr.length - 1)
   end
 
   def level_order(node = @root)
@@ -177,9 +178,13 @@ arr = Array.new(30) { rand(1..100) }.uniq.sort
 p arr
 tree = Tree.new(arr)
 tree.build_tree
-#tree.insert(1000)
-# tree.insert(2)
-#tree.insert(200)
+p tree.balanced?
+tree.insert(1000)
+tree.insert(200)
+tree.insert(300)
+tree.insert(500)
 tree.pretty_print
-p arr[5]
-p tree.height(arr[5])
+p tree.balanced?
+tree.rebalance
+tree.pretty_print
+p tree.balanced?
