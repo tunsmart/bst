@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'pry-byebug'
 # frozen_string_literal: true
 
@@ -54,10 +56,10 @@ class Tree
 
   def find(value, node = @root)
     if node.nil?
-      puts "Not found"
-      return nil
+      puts 'Not found'
+      nil
     elsif value == node.data
-      return node
+      node
     else
       node = find(value, node.left) if value < node.data
       node = find(value, node.right) if value > node.data
@@ -65,10 +67,11 @@ class Tree
     end
   end
 
-  def depth(value, root=@root, level=0)
+  def depth(value, root = @root, level = 0)
     return nil if root.nil?
+
     if value == root.data
-      return level 
+      level
     elsif value < root.data
       depth(value, root.left, level += 1)
     elsif value > root.data
@@ -78,32 +81,34 @@ class Tree
 
   def height(node = @root)
     return -1 if node.nil?
+
     left_h = height(node.left)
     right_h = height(node.right)
 
-    (left_h > right_h) ? left_h + 1 : right_h + 1
+    left_h > right_h ? left_h + 1 : right_h + 1
   end
 
   def balanced?
     left_tree_height = height(@root.left)
     right_tree_height = height(@root.right)
-    ((left_tree_height - right_tree_height).abs > 1) ? false : true 
+    (left_tree_height - right_tree_height).abs <= 1
   end
 
   def rebalance
-    arr = self.in_order
+    arr = in_order
     @root = nil
-    self.build_tree(arr, 0, arr.length - 1)
+    build_tree(arr, 0, arr.length - 1)
   end
 
   def level_order(node = @root)
     return nil if node.nil?
+
     result = []
     queue = []
     queue << node
     until queue.empty?
       node = queue[0]
-      (block_given?) ? yield(node.data) : result << node.data
+      block_given? ? yield(node.data) : result << node.data
       queue << node.left unless node.left.nil?
       queue << node.right unless node.right.nil?
       queue.shift
@@ -111,37 +116,31 @@ class Tree
     result unless block_given?
   end
 
-  def pre_order(node = @root, result=[], &block)
+  def pre_order(node = @root, result = [], &block)
     return nil if node.nil?
+
     block ? block.call(node.data) : result << node.data
     pre_order(node.left, result, &block)
     pre_order(node.right, result, &block)
     return result unless block_given?
   end
 
-  def in_order(node = @root, result=[], &block)
+  def in_order(node = @root, result = [], &block)
     return nil if node.nil?
+
     in_order(node.left, result, &block)
     block ? block.call(node.data) : result << node.data
     in_order(node.right, result, &block)
     return result unless block_given?
   end
 
-  def post_order(node = @root, result=[], &block)
+  def post_order(node = @root, result = [], &block)
     return nil if node.nil?
+
     post_order(node.left, result, &block)
     post_order(node.right, result, &block)
     block ? block.call(node.data) : result << node.data
     return result unless block_given?
-  end
-
-  def min_value(node)
-    minv = node.data
-    until node.left.nil?
-      minv = node.data
-      node = node.left
-    end
-    minv
   end
 
   def pretty_print(node = @root, prefix = '', is_left = true)
@@ -152,7 +151,15 @@ class Tree
 
   private
 
-  # this helper method will avoid the multiple size decreses in recursion
+  def min_value(node)
+    minv = node.data
+    until node.left.nil?
+      minv = node.data
+      node = node.left
+    end
+    minv
+  end
+
   def removeHelper(value, node = @root)
     return nil if node.nil?
 
