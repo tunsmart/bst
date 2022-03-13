@@ -60,7 +60,7 @@ class Tree
     else
       node = find(value, node.left) if value < node.data
       node = find(value, node.right) if value > node.data
-      return node
+      node
     end
   end
 
@@ -73,6 +73,26 @@ class Tree
     elsif value > root.data
       depth(value, root.right, level += 1)
     end
+  end
+
+  def height(value, node = self.find(value))
+    return nil if node.nil?
+
+    left_height = 0
+    left_root = node
+    until left_root.nil?
+      left_height += 1
+      left_root = left_root.left
+    end
+
+    right_height = 0
+    right_root = node
+    until right_root.nil?
+      right_height += 1
+      right_root = right_root.left
+    end
+
+    right_height > left_height ? right_height : left_height
   end
 
   def level_order(node = @root)
@@ -161,5 +181,5 @@ tree.build_tree
 # tree.insert(2)
 #tree.insert(200)
 tree.pretty_print
-p arr[3]
-p tree.depth(arr[3])
+p arr[5]
+p tree.height(arr[5])
